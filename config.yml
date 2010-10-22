@@ -1,0 +1,136 @@
+name: "Omeka"
+
+timeout: 30
+perpage: 20
+maxcost: 50000
+
+database:
+  adapter: mysql2
+  host: localhost
+  database: omeka
+  username: omeka
+  password: omeka
+
+tables:
+  omeka_collections:
+    doc:          "All public collections in the Omeka system"
+    id:           "Primary Key"
+    name:         "Name of the collection"
+    description:  "A description of the collection"
+    public:       "Whether this collection is public"
+    featured:     "Whether this collection is featured"
+    require:
+      - omeka_collections.public eq 1
+  
+
+  omeka_items:
+    id: "Primary Key"
+    item_type_id: "Foreign Key relationship: omeka_item_types.id"
+    collection_id: "Foreign Key relationship: omeka_collections.id"
+    featured: "Whether this item is featured"
+    public: "Whether this item is public"
+    modified: "When this item as last modified"
+    added: "When this item was last added"
+    require:
+      - omeka_items.public eq 1
+
+  omeka_data_types:
+    doc: "Provides all data types used for elements in Omeka. These are the basic types of user input data, such as Text, Integer, and Date"
+    id: "Primary Key"
+    name: "Data type name"
+    description: "Description of the data type"
+
+  omeka_element_sets:
+    doc: "Defines the various sets of available descriptive information. Element sets can contain sets of fields required for images, or a different set for text, for instance."
+    id: "Primary Key"
+    record_type_id: "..."
+    name: "Element set name"
+    description: "Element set description"
+
+  omeka_element_texts:
+    doc: "Proivdes the raw data for the given element."
+    id: "Primary Key"
+    record_id:
+    record_type_id:
+    element_id: "Foreign Key relationship: omeka_elements.id"
+    html: "HTML representation of data"
+    text: "Text representation of data"
+
+  omeka_elements:
+    doc: "Describes each descriptive field associated with an element set. Interviewer and Interviewee are sample elements for an Interview, while aperture and fstop elements may be appropriate for a Photo."
+    id: "Primary Key"
+    record_type_id: "..."
+    data_type_id: "Foreign Key relationship: omeka_data_types.id"
+    element_set_id: "Foreign Key relationship: omeka_element_sets.id"
+    name: "Name of the element"
+    description: "A description of the element"
+
+  omeka_entities:
+    doc: "Omeka user information - emails are not made available"
+    id: "Primary Key"
+    first_name: "First name of the user"
+    middle_name: "Middle name of the user"
+    last_name: "Last name of the user"
+    institution: "Institution the user belongs to"
+
+  omeka_entities_relations:
+    id:
+    entity_id:
+    relation_id:
+    relationship_id:
+    type:
+    time:
+
+  omeka_entity_relationships:
+    id: "Primary Key"
+    name: "Type of entity relationship. ie: added, modified, favorite, collector"
+    description: "Description of the relationship"
+
+  omeka_files:
+    id: "Primary Key"
+    item_id: "Foreign Key relationship: omeka_items.id"
+    size: "File size in bytes"
+    mime_browser: "Mime type for browser display"
+    archive_filename: "Filename. Join to /archive/fullsize for full size image for instance."
+    modified: "Date modified"
+    added: "Date added"
+
+  omeka_item_types:
+    id: "Primary Key"
+    name: "The name of the item type. ie: Document, Moving Image, Sound, Person, Still Image"
+    description: "A description of the item type."
+
+  omeka_item_types_elements:
+    id: "Primary Key"
+    item_type_id: "Foreign Key relationship: omeka_item_types.id"
+    element_id: "Foreign Key relationship: omeka_elements.id"
+
+  omeka_mime_element_set_lookup:
+    id: "Primary Key"
+    element_set_id: "Foreign Key relationship: omeka_element_sets.id"
+    mime: "Mime associated with the element set"
+
+  omeka_record_types:
+    id: "Primary Key"
+    name: "Name of the record type. ie: All, Item, File"
+    description: "A description of the record type."
+
+  omeka_taggings:
+    id: "Primary Key"
+    relation_id: "..."
+    tag_id: "Foreign Key relationship: omeka_tags.id"
+    entity_id: "Foreign Key relationship: omeka_*.id, where * is based on the `type` value"
+    type: "The type of item this tag is related to: ie: Item"
+    time: "The date at which this tag was added."
+
+  omeka_tags:
+    id: "Primary Key"
+    name: "Tag value"
+
+  omeka_users:
+    id: "Primary Key"
+    active:
+    require:
+      omeka_users.active eq 1
+
+## omeka_options, omeka_plugins, omeka_processes, omeka_users_activations < PRIVATE

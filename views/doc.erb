@@ -1,0 +1,134 @@
+<html>
+  <head>
+    <title><%= CONFIG["name"] %></title>
+    <style type="text/css">
+      body {
+        margin:50px;
+        font-family:serif;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Documentation: <%= CONFIG["name"] %></h1>
+
+    <p>This API is automatically exposed with the <a href="http://www.openexhibits.org/">Open-API generator</a> available as an <a href="http://www.openexhibits.org/">Open Exhibits</a> experiment. All queries are read-only HTTP GET requests.</p>
+
+    <h2>Available Methods</h2>
+
+    <h3>/doc</h3>
+
+    <p>Returns this page, which contains an introduction to the API and automatically generated schema information detailing the information available for query.</p>
+
+    <h3>/version</h3>
+
+    <p>Return the version of Open-API used to generate this API.</p>
+ 
+    <div class="request-sample">
+      <div>Request:</div>
+
+      <pre>
+      GET /version
+      </pre>
+    </div>
+
+    <div class="response-sample">
+      <div>Response:</div>
+
+      <pre>
+      open-api-0.1
+      </pre>
+    </div>
+ 
+    <h3>/find</h3>
+
+    <p>An interface to the query functionality provided by this API.</p>
+
+    <div class="parameters">
+      Parameters:
+
+      <ul>
+        <li><strong>select</strong>
+          <p>A comma delimmited list of the fields from the schema you would like in the response. These fields must be in "table.column" format, where the table and column names correspond to the provided schema definition. This is similar to the SELECT value from an SQL query.</p>
+        </li>
+        <li><strong>conditions</strong>
+          <p>A comma delimmited list of conditions the data must match to be returned. Conditions are in the format of:</p>
+            <pre>
+                LEFTOPERAND OPERATION RIGHTOPERAND
+            </pre>
+
+            <p>where LEFTOPERAND must be a field in "table.column" format, and RIGHTOPERAND must be either a field in "table.column" format, an integer, float, or string value. String values must be enclosed in quotes. OPERATION can be one of the following: <i><%= PERMITTED_COMPARISON_OPERATIONS.join(", ") %></i></p>
+
+            <p>You can use two fields to perform a basic join:</p>
+
+              <pre>
+                posts.author_id eq users.id,
+                users.id eq 5
+              </pre>
+
+            <p>The above conditions would return posts from the uesr with an id of 5.</p>
+
+            <p>All conditions are joined with AND, there is no available OR.</p>
+        </li>
+        <li><strong>page</strong>
+          <p>An integer value representing which page of results you want. Results are limited to <%= CONFIG["maxcount"] %> per page.<p>
+        </li>
+        <li><strong>order</strong>
+          <p>A comma delimmited list of conditions specifying the order of the response data. Each item in the list must be in "table.column ORDER" format, where ORDER is either <i>asc</i> or <i>desc</i><p>
+        </li>
+      </ul>
+    </div>
+
+    <div class="request-sample">
+      <div>Join Request (this should be URL encoded and one line, but is multiline and decoded here for clarity):</div>
+
+      <pre>
+        GET /find?
+          select=
+            wp_posts.post_title
+          &conditions=
+            wp_posts.post_author eq wp_users.ID,
+            wp_users.ID eq 1
+      </pre>
+    </div>
+
+    <div class="response-sample">
+      <div>Response:</div>
+
+      <pre>
+          &lt;opt&gt; 
+            &lt;results pages="1" count="7" page="1"&gt; 
+              &lt;result ID="9" post_title="Loving your mansion - a case study" /&gt; 
+              &lt;result ID="2" post_title="Forget about price" /&gt; 
+              &lt;result ID="6" post_title="Hotels as primary living facilities" /&gt; 
+              &lt;result ID="4" post_title="Entertaining yourself by staring at the wall" /&gt; 
+              &lt;result ID="135" post_title="How to handle your accountant" /&gt; 
+              &lt;result ID="8" post_title="Being crazy while remaining sane" /&gt; 
+              &lt;result ID="10" post_title="Deep investigations of the criminal mind" /&gt; 
+            &lt;/results&gt;
+          &lt;/opt&gt;
+      </pre>
+    </div>
+
+    <h2>Exposed Schema</h2>
+
+    <% CONFIG["tables"].each do |table, columns| %>
+      <h3>Table: <%= table %></h3>
+
+      <p><%= columns["doc"] %></p>
+
+      <h4>Available Columns</h4>
+
+      <ul>
+        <% columns.each do |column, doc| %>
+          <% unless ["require", "doc"].include? column %>
+            <li><strong><%= column %></strong>
+              <p><%= doc %></p></li>
+          <% end %>
+        <% end %>
+      </ul>
+      
+
+    <% end %>
+
+  </body>
+</html>
