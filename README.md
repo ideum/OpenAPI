@@ -36,25 +36,27 @@ Database
 The database access is configured via ActiveRecod, so this block will be 
 familiar to Rails developers. All settings are required:
 
-  database:
-    adapter: mysql2
-    host: localhost
-    database: mydb
-    username: user
-    password: 1234
+    database:
+      adapter: mysql2
+      host: localhost
+      database: mydb
+      username: user
+      password: 1234
 
 Options
 --------------------------
 
-  timeout: 30
-  perpage: 500
-  maxcost: 50000
+    timeout: 30
+    perpage: 500
+    maxcost: 50000
 
 
 *timeout* - The number of seconds before a query request should time out.
+
 *perpage* - The number of results to return per page. Since no supporting
   HTML is displayed, you should feel comfortable setting this value to
   something a bit higher than you would for your web page.
+
 *maxcost* - The number of rows a query will iterate over before it's 
   assumed to large to execute. The cost is calculated by taking the sum 
   of the 'rows' column of a MySQL EXPLAIN query.
@@ -62,16 +64,16 @@ Options
 Tables
 --------------------------
 
-tables:
-  mytablename:
-    doc: "A description of the table used by the documentation generator"
-    mycolumn: "Some description of my column used by the documentation generator"
-    require:
-      - mytablename.status eq "published"
+    tables:
+      mytablename:
+        doc: "A description of the table used by the documentation generator"
+        mycolumn: "Some description of my column used by the documentation generator"
+        require:
+          - mytablename.status eq "published"
 
-  mysecondtable:
-    doc: "Second table"
-    mycolumn2: "A colum in the second table."
+      mysecondtable:
+        doc: "Second table"
+        mycolumn2: "A colum in the second table."
 
 
 The `tables` setting provides the mechanims you use to map the query columns
